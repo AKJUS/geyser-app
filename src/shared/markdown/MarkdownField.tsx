@@ -1,18 +1,21 @@
 import { BoxProps, HStack, VStack } from '@chakra-ui/react'
-import { Control } from 'react-hook-form'
+import { Control, FieldPath, FieldValues } from 'react-hook-form'
 
 import { SkeletonLayout } from '../../shared/components/layouts'
 import { MdxMarkdownEditor } from './MdxMarkdownEditor.tsx'
 
-export type MarkdownFieldProps = {
+export type MarkdownFieldProps<
+  FormValues extends FieldValues = FieldValues,
+  Name extends FieldPath<FormValues> = FieldPath<FormValues>,
+> = {
   autoFocus?: boolean
   preview?: boolean
   content?: string
   placeholder?: string
   initialContent?: () => string
   initialContentReady?: boolean
-  name?: string
-  control?: Control<any, any>
+  name?: Name
+  control?: Control<FormValues>
   flex?: boolean
   stickyToolbar?: string | number
   toolbarWrapperProps?: BoxProps
@@ -28,7 +31,10 @@ export type MarkdownFieldProps = {
 }
 
 /** Legacy compatibility bridge from Remirror-based props to the shared MDX editor API. */
-export const MarkdownField = ({
+export const MarkdownField = <
+  FormValues extends FieldValues = FieldValues,
+  Name extends FieldPath<FormValues> = FieldPath<FormValues>,
+>({
   autoFocus,
   preview,
   content,
@@ -40,7 +46,7 @@ export const MarkdownField = ({
   editorWrapperProps,
   markdownRawEditorProps,
   fontFamily,
-}: MarkdownFieldProps) => {
+}: MarkdownFieldProps<FormValues, Name>) => {
   const resolvedValue = content ?? initialContent?.() ?? ''
   const minHeight = markdownRawEditorProps?.minHeight ?? editorWrapperProps?.minHeight ?? (preview ? '0px' : '120px')
 
@@ -57,7 +63,7 @@ export const MarkdownField = ({
       <MdxMarkdownEditor
         mode="edit"
         control={control}
-        name={name || 'description'}
+        name={name ?? ('description' as Name)}
         autoFocus={autoFocus}
         placeholder={placeholder}
         minHeight={minHeight}

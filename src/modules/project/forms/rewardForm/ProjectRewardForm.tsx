@@ -19,6 +19,7 @@ import { PrivateCommentPrompt, RewardCurrency } from '@/types'
 
 import { UpdateCurrencyModal } from '../../pages/projectView/views/rewards/components/UpdateCurrencyModal.tsx'
 import { useProjectRewardForm } from '../../pages/projectView/views/rewards/hooks/useProjectRewardForm.ts'
+import type { RewardFormValues } from '../../pages/projectView/views/rewards/hooks/useProjectRewardForm.ts'
 import { DescriptionFormComponent } from './components/DescriptionFormComponent.tsx'
 import { FormElementWithSwitch } from './components/FormElementWithSwitch.tsx'
 import { HeaderComponent } from './components/HeaderComponent.tsx'
@@ -157,7 +158,7 @@ export const ProjectRewardForm = ({
               error={errors.cost?.message}
               currency={watch('rewardCurrency')}
             />
-            <ControlledCustomSelect<any, any, false>
+            <ControlledCustomSelect<RewardFormValues, { label: string; value: RewardCurrency }, false>
               label={t('Currency')}
               name="rewardCurrency"
               control={control}
@@ -166,7 +167,11 @@ export const ProjectRewardForm = ({
                 { label: t('USD ($)'), value: RewardCurrency.Usdcent },
               ]}
               width="100%"
-              onChange={(value) => handleCurrencySelectChange(value?.value)}
+              onChange={(value) => {
+                if (value?.value) {
+                  handleCurrencySelectChange(value.value)
+                }
+              }}
             />
           </Stack>
 

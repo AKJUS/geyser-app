@@ -1,6 +1,6 @@
 import { Box, Input, InputGroup, InputProps, InputRightElement } from '@chakra-ui/react'
 import React, { useEffect, useState } from 'react'
-import { useController, UseControllerProps } from 'react-hook-form'
+import { FieldPath, FieldValues, useController, UseControllerProps } from 'react-hook-form'
 
 import { ProjectGoalCurrency } from '../../../types'
 import { commaFormatted } from '../../utils/formatData'
@@ -8,7 +8,10 @@ import { useCurrencyFormatter } from '../../utils/hooks/useCurrencyFormatter.ts'
 import { FieldContainer } from '../form'
 import { Body } from '../typography'
 
-type Props = UseControllerProps<any, any> &
+type Props<
+  FormValues extends FieldValues = FieldValues,
+  Name extends FieldPath<FormValues> = FieldPath<FormValues>,
+> = UseControllerProps<FormValues, Name> &
   Omit<InputProps, 'size'> & {
     width?: string | number
     inputRef?: React.Ref<HTMLInputElement>
@@ -18,8 +21,13 @@ type Props = UseControllerProps<any, any> &
     error?: string
   }
 
-export const ControlledGoalAmount = (props: Props) => {
-  const { field } = useController(props)
+export const ControlledGoalAmount = <
+  FormValues extends FieldValues = FieldValues,
+  Name extends FieldPath<FormValues> = FieldPath<FormValues>,
+>(
+  props: Props<FormValues, Name>,
+) => {
+  const { field } = useController<FormValues, Name>(props)
 
   const [unformattedValue, setUnformattedValue] = useState(field.value || '')
   const [formattedValue, setFormattedValue] = useState('')

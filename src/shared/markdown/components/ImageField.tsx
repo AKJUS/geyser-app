@@ -1,22 +1,34 @@
 import { FormControl } from '@chakra-ui/react'
-import { Control, Controller, FieldValue } from 'react-hook-form'
+import { Control, Controller, FieldPath, FieldValues } from 'react-hook-form'
 
 import { FileUpload } from '@/shared/molecules'
 
 import { UploadBox } from '../../../components/ui'
 import { FieldContainer } from '../../components/form/FieldContainer'
 
-export type ImageFieldProps = {
-  name: string
+export type ImageFieldProps<
+  FormValues extends FieldValues = FieldValues,
+  Name extends FieldPath<FormValues> = FieldPath<FormValues>,
+> = {
+  name: Name
   caption?: string
   label?: string
   required?: boolean
-  control: Control<FieldValue<any>, any>
+  control: Control<FormValues>
 }
 
-export const ImageField = ({ control, name, caption, required, label }: ImageFieldProps) => {
+export const ImageField = <
+  FormValues extends FieldValues = FieldValues,
+  Name extends FieldPath<FormValues> = FieldPath<FormValues>,
+>({
+  control,
+  name,
+  caption,
+  required,
+  label,
+}: ImageFieldProps<FormValues, Name>) => {
   return (
-    <Controller
+    <Controller<FormValues, Name>
       name={name}
       control={control}
       render={({ field, fieldState }) => (

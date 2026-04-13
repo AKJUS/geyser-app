@@ -1,10 +1,13 @@
 import { InputGroup, Select } from '@chakra-ui/react'
-import { useController, UseControllerProps } from 'react-hook-form'
+import { FieldPath, FieldValues, useController, UseControllerProps } from 'react-hook-form'
 
 import { FieldContainer } from '../form'
 import { Body } from '../typography'
 
-type Props = UseControllerProps<any, any> & {
+type Props<
+  FormValues extends FieldValues = FieldValues,
+  Name extends FieldPath<FormValues> = FieldPath<FormValues>,
+> = UseControllerProps<FormValues, Name> & {
   width?: string | number
   label: string
   options: { value: string; label: string }[]
@@ -19,8 +22,11 @@ type Props = UseControllerProps<any, any> & {
   fontSize?: string
 }
 
-export function ControlledSelect(props: Props) {
-  const { field } = useController(props)
+export function ControlledSelect<
+  FormValues extends FieldValues = FieldValues,
+  Name extends FieldPath<FormValues> = FieldPath<FormValues>,
+>(props: Props<FormValues, Name>) {
+  const { field } = useController<FormValues, Name>(props)
 
   return (
     <FieldContainer

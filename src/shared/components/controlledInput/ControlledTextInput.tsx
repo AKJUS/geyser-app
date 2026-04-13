@@ -10,12 +10,15 @@ import {
   VStack,
 } from '@chakra-ui/react'
 import React from 'react'
-import { useController, UseControllerProps } from 'react-hook-form'
+import { FieldPath, FieldValues, useController, UseControllerProps } from 'react-hook-form'
 
 import { FieldContainer } from '../form'
 import { Body } from '../typography'
 
-export type ControlledTextInputProps = UseControllerProps<any, any> &
+export type ControlledTextInputProps<
+  FormValues extends FieldValues = FieldValues,
+  Name extends FieldPath<FormValues> = FieldPath<FormValues>,
+> = UseControllerProps<FormValues, Name> &
   Omit<InputProps, 'size'> & {
     width?: string | number
     inputRef?: React.Ref<HTMLInputElement>
@@ -34,8 +37,13 @@ export type ControlledTextInputProps = UseControllerProps<any, any> &
     rightElement?: React.ReactNode
   }
 
-export const ControlledTextInput = (props: ControlledTextInputProps) => {
-  const { field, formState } = useController(props)
+export const ControlledTextInput = <
+  FormValues extends FieldValues = FieldValues,
+  Name extends FieldPath<FormValues> = FieldPath<FormValues>,
+>(
+  props: ControlledTextInputProps<FormValues, Name>,
+) => {
+  const { field, fieldState } = useController<FormValues, Name>(props)
   const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
     if (field?.onBlur) {
       field.onBlur()
@@ -61,11 +69,7 @@ export const ControlledTextInput = (props: ControlledTextInputProps) => {
     }
   }
 
-  const error = formState.errors[props.name]?.message
-    ? `${formState.errors[props.name]?.message}`
-    : props.error
-    ? props.error
-    : ''
+  const error = fieldState.error?.message ? `${fieldState.error.message}` : props.error ? props.error : ''
 
   const title =
     props.label || props.infoTooltip ? (

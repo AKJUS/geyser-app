@@ -1,20 +1,34 @@
 import { FormControl, Input, InputProps } from '@chakra-ui/react'
-import { Control, Controller, FieldValue } from 'react-hook-form'
+import { Control, Controller, FieldPath, FieldValues } from 'react-hook-form'
 
 import { FieldContainer } from '../../components/form/FieldContainer'
 
-export type TextFieldProps = InputProps & {
-  name: string
+export type TextFieldProps<
+  FormValues extends FieldValues = FieldValues,
+  Name extends FieldPath<FormValues> = FieldPath<FormValues>,
+> = InputProps & {
+  name: Name
   placeholder?: string
   label?: string
   caption?: string
   required?: boolean
-  control: Control<FieldValue<any>, any>
+  control: Control<FormValues>
 }
 
-export const TextField = ({ control, name, placeholder, required, label, caption, ...props }: TextFieldProps) => {
+export const TextField = <
+  FormValues extends FieldValues = FieldValues,
+  Name extends FieldPath<FormValues> = FieldPath<FormValues>,
+>({
+  control,
+  name,
+  placeholder,
+  required,
+  label,
+  caption,
+  ...props
+}: TextFieldProps<FormValues, Name>) => {
   return (
-    <Controller
+    <Controller<FormValues, Name>
       name={name}
       control={control}
       render={({ field, fieldState }) => (

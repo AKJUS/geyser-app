@@ -34,7 +34,7 @@ import { ShippingAddressFormData } from './FundingDetailsShippingAddress.tsx'
 
 type FundingDetailsSummaryProps = {
   handleSubmit: ShippingHandleSubmitType
-  addressForm: UseFormReturn<ShippingAddressFormData, any, undefined>
+  addressForm: UseFormReturn<ShippingAddressFormData>
 }
 
 type SelectedPaymentOption = {

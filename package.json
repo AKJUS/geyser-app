@@ -177,6 +177,8 @@
     "workbox-window": "^7.1.0"
   },
   "resolutions": {
+    "@types/react": "18.3.28",
+    "@types/react-dom": "18.3.7",
     "prosemirror-model": "1.22.2"
   },
   "main": "main.tsx",

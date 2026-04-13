@@ -24,7 +24,7 @@ type SubscribeFormProps = StackProps & {
   /** Flodesk segment IDs to assign the subscriber to on creation. */
   segmentIds?: string[]
   buttonProps?: ButtonProps
-  inputProps?: Omit<ControlledTextInputProps, 'control' | 'name' | 'error'>
+  inputProps?: Omit<ControlledTextInputProps<SubscriptionFormData, 'email'>, 'control' | 'name' | 'error'>
 }
 
 /** Inline email subscription form that creates a Flodesk subscriber. */

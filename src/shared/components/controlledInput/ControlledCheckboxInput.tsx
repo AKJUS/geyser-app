@@ -1,17 +1,23 @@
 import { Checkbox, CheckboxProps, VStack } from '@chakra-ui/react'
-import { useController, UseControllerProps } from 'react-hook-form'
+import { FieldPath, FieldValues, useController, UseControllerProps } from 'react-hook-form'
 
 import { Body } from '../typography'
 
-type Props = UseControllerProps<any, any> &
+type Props<
+  FormValues extends FieldValues = FieldValues,
+  Name extends FieldPath<FormValues> = FieldPath<FormValues>,
+> = UseControllerProps<FormValues, Name> &
   CheckboxProps & {
     label: string
     error?: string
     defaultChecked?: boolean
   }
 
-export function ControlledCheckboxInput(props: Props) {
-  const { field, formState } = useController(props)
+export function ControlledCheckboxInput<
+  FormValues extends FieldValues = FieldValues,
+  Name extends FieldPath<FormValues> = FieldPath<FormValues>,
+>(props: Props<FormValues, Name>) {
+  const { field, fieldState } = useController<FormValues, Name>(props)
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (field?.onChange) {
@@ -23,11 +29,7 @@ export function ControlledCheckboxInput(props: Props) {
     }
   }
 
-  const error = formState.errors[props.name]?.message
-    ? `${formState.errors[props.name]?.message}`
-    : props.error
-    ? props.error
-    : ''
+  const error = fieldState.error?.message ? `${fieldState.error.message}` : props.error ? props.error : ''
 
   return (
     <VStack alignItems="flex-start" width="100%">

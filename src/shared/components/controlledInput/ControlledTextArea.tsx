@@ -1,11 +1,14 @@
 import { Textarea, TextareaProps } from '@chakra-ui/react'
 import React from 'react'
-import { useController, UseControllerProps } from 'react-hook-form'
+import { FieldPath, FieldValues, useController, UseControllerProps } from 'react-hook-form'
 
 import { FieldContainer } from '../form'
 import { Body } from '../typography'
 
-type Props = UseControllerProps<any, any> &
+type Props<
+  FormValues extends FieldValues = FieldValues,
+  Name extends FieldPath<FormValues> = FieldPath<FormValues>,
+> = UseControllerProps<FormValues, Name> &
   TextareaProps & {
     width?: string | number
     inputRef?: React.Ref<HTMLInputElement>
@@ -15,8 +18,11 @@ type Props = UseControllerProps<any, any> &
     resize?: 'none' | 'vertical' | 'horizontal'
   }
 
-export function ControlledTextArea(props: Props) {
-  const { field } = useController(props)
+export function ControlledTextArea<
+  FormValues extends FieldValues = FieldValues,
+  Name extends FieldPath<FormValues> = FieldPath<FormValues>,
+>(props: Props<FormValues, Name>) {
+  const { field } = useController<FormValues, Name>(props)
 
   const handleBlur = (e: React.FocusEvent<HTMLTextAreaElement>) => {
     if (field?.onBlur) {

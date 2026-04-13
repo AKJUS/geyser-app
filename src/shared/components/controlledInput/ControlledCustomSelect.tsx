@@ -16,7 +16,7 @@ export interface ControlledCustomSelectProps<FormValues extends FieldValues, Opt
   control: Control<FormValues>
   containerProps?: StackProps
   defaultValue?: any
-  onChange?: (value: SingleValue<Option> | MultiValue<Option>) => void
+  onChange?: (value: IsMulti extends true ? MultiValue<Option> : SingleValue<Option>) => void
   onBlur?: () => void
   required?: boolean
   width?: string | number | null
@@ -79,7 +79,7 @@ export const ControlledCustomSelect = <FormValues extends FieldValues, Option, I
 
           field.onChange(formValue)
           if (props.onChange) {
-            props.onChange(selectedOption)
+            props.onChange(selectedOption as IsMulti extends true ? MultiValue<Option> : SingleValue<Option>)
           }
         }}
         onBlur={() => {

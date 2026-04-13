@@ -15,7 +15,7 @@ import {
   toolbarPlugin,
 } from '@mdxeditor/editor'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { Control, useController } from 'react-hook-form'
+import { Control, FieldPath, FieldPathValue, FieldValues, useController } from 'react-hook-form'
 
 import { useSignedUpload } from '@/shared/hooks/useSignedUpload.tsx'
 
@@ -36,12 +36,15 @@ const MDX_EDITOR_CLASS_NAME = 'geyser-mdx-editor'
 const MDX_EDITOR_TOOLBAR_CLASS_NAME = 'geyser-mdx-toolbar'
 const MDX_EDITOR_MODE_TOGGLE_CLASS_NAME = 'geyser-mdx-mode-toggle'
 
-export type MdxMarkdownEditorProps = {
+export type MdxMarkdownEditorProps<
+  FormValues extends FieldValues = FieldValues,
+  Name extends FieldPath<FormValues> = FieldPath<FormValues>,
+> = {
   mode?: 'edit' | 'preview'
   value?: string
   onChange?: (value: string) => void
-  control?: Control<any, any>
-  name?: string
+  control?: Control<FormValues>
+  name?: Name
   placeholder?: string
   autoFocus?: boolean
   minHeight?: string | number
@@ -58,7 +61,10 @@ type MdxMarkdownEditorInternalProps = {
 }
 
 /** Shared MDX markdown editor with a unified sticky-top toolbar and source-mode toggle. */
-export const MdxMarkdownEditor = ({
+export const MdxMarkdownEditor = <
+  FormValues extends FieldValues = FieldValues,
+  Name extends FieldPath<FormValues> = FieldPath<FormValues>,
+>({
   mode = 'edit',
   value,
   onChange,
@@ -68,7 +74,7 @@ export const MdxMarkdownEditor = ({
   autoFocus,
   minHeight,
   fontFamily,
-}: MdxMarkdownEditorProps) => {
+}: MdxMarkdownEditorProps<FormValues, Name>) => {
   const resolvedMinHeight = minHeight ?? (mode === 'preview' ? '0px' : DEFAULT_MIN_HEIGHT)
   const [localValue, setLocalValue] = useState(value || '')
 
@@ -107,7 +113,10 @@ export const MdxMarkdownEditor = ({
   )
 }
 
-const MdxMarkdownEditorWithHookForm = ({
+const MdxMarkdownEditorWithHookForm = <
+  FormValues extends FieldValues = FieldValues,
+  Name extends FieldPath<FormValues> = FieldPath<FormValues>,
+>({
   control,
   name,
   placeholder,
@@ -115,8 +124,8 @@ const MdxMarkdownEditorWithHookForm = ({
   minHeight,
   fontFamily,
 }: {
-  control: Control<any, any>
-  name: string
+  control: Control<FormValues>
+  name: Name
   placeholder?: string
   autoFocus?: boolean
   minHeight: string | number
@@ -124,10 +133,10 @@ const MdxMarkdownEditorWithHookForm = ({
 }) => {
   const {
     field: { value, onChange },
-  } = useController({
+  } = useController<FormValues, Name>({
     control,
     name,
-    defaultValue: '',
+    defaultValue: '' as FieldPathValue<FormValues, Name>,
   })
 
   return (

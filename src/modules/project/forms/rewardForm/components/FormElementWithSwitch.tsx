@@ -1,6 +1,6 @@
 import { Collapse, HStack, VStack } from '@chakra-ui/react'
 import { useEffect, useState } from 'react'
-import { useController } from 'react-hook-form'
+import { FieldPath, FieldValues, useController } from 'react-hook-form'
 
 import {
   ControlledSwitchInput,
@@ -9,21 +9,27 @@ import {
 import { CardLayout, CardLayoutProps } from '@/shared/components/layouts/CardLayout.tsx'
 import { Body } from '@/shared/components/typography/Body.tsx'
 
-type FormElementWithSwitchProps = {
+type FormElementWithSwitchProps<
+  FormValues extends FieldValues = FieldValues,
+  Name extends FieldPath<FormValues> = FieldPath<FormValues>,
+> = {
   title: string
   description: React.ReactNode
   children: React.ReactNode
-  switchProps: ControlledSwitchInputProps
+  switchProps: ControlledSwitchInputProps<FormValues, Name>
 } & CardLayoutProps
 
-export const FormElementWithSwitch = ({
+export const FormElementWithSwitch = <
+  FormValues extends FieldValues = FieldValues,
+  Name extends FieldPath<FormValues> = FieldPath<FormValues>,
+>({
   title,
   description,
   switchProps,
   children,
   ...rest
-}: FormElementWithSwitchProps) => {
-  const { field } = useController({ control: switchProps.control, name: switchProps.name })
+}: FormElementWithSwitchProps<FormValues, Name>) => {
+  const { field } = useController<FormValues, Name>({ control: switchProps.control, name: switchProps.name })
 
   const isOpen = Boolean(field.value)
   const [isOpenAfter, setIsOpenAfter] = useState(false)

@@ -1,9 +1,12 @@
 import { HStack, StackProps, Switch, SwitchProps, VStack } from '@chakra-ui/react'
-import { useController, UseControllerProps } from 'react-hook-form'
+import { FieldPath, FieldValues, useController, UseControllerProps } from 'react-hook-form'
 
 import { Body } from '../typography'
 
-export type ControlledSwitchInputProps = UseControllerProps<any, any> &
+export type ControlledSwitchInputProps<
+  FormValues extends FieldValues = FieldValues,
+  Name extends FieldPath<FormValues> = FieldPath<FormValues>,
+> = UseControllerProps<FormValues, Name> &
   Omit<SwitchProps, 'size'> & {
     label?: string
     labelComponent?: React.ReactNode
@@ -12,12 +15,15 @@ export type ControlledSwitchInputProps = UseControllerProps<any, any> &
     containerProps?: StackProps
   }
 
-export function ControlledSwitchInput({
+export function ControlledSwitchInput<
+  FormValues extends FieldValues = FieldValues,
+  Name extends FieldPath<FormValues> = FieldPath<FormValues>,
+>({
   switchPosition = 'right',
   containerProps,
   ...props
-}: ControlledSwitchInputProps) {
-  const { field } = useController(props)
+}: ControlledSwitchInputProps<FormValues, Name>) {
+  const { field } = useController<FormValues, Name>(props)
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (field?.onChange) {
@@ -40,7 +46,7 @@ export function ControlledSwitchInput({
           onChange={handleChange}
           sx={{ '--switch-track-width': '2.4rem', '--switch-track-height': '1.2rem' }}
           size="md"
-          value={field.value || props.value || false}
+          isChecked={Boolean(field.value ?? props.isChecked ?? props.value)}
           {...props}
         />
         {switchPosition === 'left' && <>{label}</>}

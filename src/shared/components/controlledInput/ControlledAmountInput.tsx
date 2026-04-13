@@ -1,6 +1,6 @@
 import { Input, InputGroup, InputProps, InputRightAddon } from '@chakra-ui/react'
 import React, { useEffect, useState } from 'react'
-import { useController, UseControllerProps } from 'react-hook-form'
+import { FieldPath, FieldValues, useController, UseControllerProps } from 'react-hook-form'
 
 import { RewardCurrency } from '@/types'
 import { toInt } from '@/utils'
@@ -8,7 +8,10 @@ import { toInt } from '@/utils'
 import { FieldContainer } from '../form'
 import { Body } from '../typography'
 
-type ControlledAmountInputProps = UseControllerProps<any, any> &
+type ControlledAmountInputProps<
+  FormValues extends FieldValues = FieldValues,
+  Name extends FieldPath<FormValues> = FieldPath<FormValues>,
+> = UseControllerProps<FormValues, Name> &
   Omit<InputProps, 'size'> & {
     width?: string | number
     inputRef?: React.Ref<HTMLInputElement>
@@ -24,18 +27,19 @@ type ControlledAmountInputProps = UseControllerProps<any, any> &
     currency: RewardCurrency
   }
 
-export function ControlledAmountInput(props: ControlledAmountInputProps) {
-  const { field, formState } = useController({ name: props.name, control: props.control })
+export function ControlledAmountInput<
+  FormValues extends FieldValues = FieldValues,
+  Name extends FieldPath<FormValues> = FieldPath<FormValues>,
+>(props: ControlledAmountInputProps<FormValues, Name>) {
+  const { field, fieldState } = useController<FormValues, Name>({ name: props.name, control: props.control })
   const [formattedValue, setFormattedValue] = useState('')
 
   useEffect(() => {
     if (field.value) {
-      let initialValue = field.value
-      if (props.currency === RewardCurrency.Usdcent) {
-        initialValue = (initialValue / 100).toFixed(2)
-      }
-
-      setFormattedValue(initialValue.toString())
+      const numericValue = Number(field.value)
+      const initialValue =
+        props.currency === RewardCurrency.Usdcent ? (numericValue / 100).toFixed(2) : numericValue.toString()
+      setFormattedValue(initialValue)
     } else {
       setFormattedValue('')
     }
@@ -73,18 +77,7 @@ export function ControlledAmountInput(props: ControlledAmountInputProps) {
     }
   }
 
-  let nestedError: any = formState.errors
-  const nameParts = props.name.split('.')
-  for (const part of nameParts) {
-    if (nestedError && nestedError[part]) {
-      nestedError = nestedError[part]
-    } else {
-      nestedError = undefined
-      break
-    }
-  }
-
-  const error = nestedError?.message ? `${nestedError.message}` : props.error ? props.error : ''
+  const error = fieldState.error?.message ? `${fieldState.error.message}` : props.error ? props.error : ''
 
   const title =
     props.label || props.infoTooltip ? (
