@@ -1,7 +1,7 @@
 {
   "name": "geyser-app",
   "private": true,
-  "version": "0.38.0",
+  "version": "0.38.1",
   "type": "module",
   "workspaces": [
     "packages/*"
@@ -51,7 +51,7 @@
     "@giphy/js-fetch-api": "^4.9.3",
     "@giphy/react-components": "^6.9.4",
     "@hookform/resolvers": "^3.1.0",
-    "@mdxeditor/editor": "3.54.0",
+    "@mdxeditor/editor": "^3.54.0",
     "@noble/hashes": "^1.8.0",
     "@react-hookz/web": "^23.0.0",
     "@react-pdf/renderer": "^3.1.14",

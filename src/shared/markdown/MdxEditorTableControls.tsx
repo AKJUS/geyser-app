@@ -1,12 +1,12 @@
 import {
   Box,
   HStack,
-  Portal,
   Popover,
   PopoverArrow,
   PopoverBody,
   PopoverContent,
   PopoverTrigger,
+  Portal,
   useColorModeValue,
   useDisclosure,
   VStack,
@@ -22,7 +22,7 @@ import {
   usePublisher,
 } from '@mdxeditor/editor'
 import { t } from 'i18next'
-import { FORMAT_ELEMENT_COMMAND, type LexicalEditor } from 'lexical'
+import { type LexicalEditor, FORMAT_ELEMENT_COMMAND } from 'lexical'
 import { useState } from 'react'
 import { PiTable, PiTextAlignCenter, PiTextAlignLeft, PiTextAlignRight } from 'react-icons/pi'
 
