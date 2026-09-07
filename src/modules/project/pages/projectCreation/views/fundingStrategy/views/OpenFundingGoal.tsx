@@ -86,7 +86,7 @@ const ManagedCircularGrantGoal = () => {
   )
 
   const { getSatoshisFromUSDCents, getUSDAmount } = useBTCConverter()
-  const { handleSubmit, loading, errors, enableSubmit, setValue, watch } = useProjectGoalForm({
+  const { handleSubmit, loading, errors, setValue, watch } = useProjectGoalForm({
     goal,
     projectId: project.id,
     managedCircularGrant: true,
@@ -121,7 +121,7 @@ const ManagedCircularGrantGoal = () => {
         continueButtonProps={{
           type: 'submit',
           isLoading: loading,
-          isDisabled: !enableSubmit,
+          isDisabled: !amount,
         }}
         backButtonProps={{
           onClick: () => navigate(getPath('launchProjectDetails', project.id)),
@@ -129,9 +129,7 @@ const ManagedCircularGrantGoal = () => {
       >
         <VStack w="full" h="full" align="flex-start" spacing={8}>
           <Body size="sm">
-            {t(
-              'Set the Circular Grant goal amount. This goal amount cannot be edited after the project has launched.',
-            )}
+            {t('Set the Circular Grant goal amount. This goal amount cannot be edited after the project has launched.')}
           </Body>
           <FieldContainer title={t('Goal amount')} error={errors.targetAmount?.message}>
             <AmountInput

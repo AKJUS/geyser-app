@@ -133,15 +133,21 @@ export const useProjectGoalForm = ({
       const targetAmount = isBTC ? formData.targetAmount : dollarsToCents(Number(formData.targetAmount))
 
       if (goal) {
-        updateProjectGoal.execute({
-          variables: {
-            input: {
+        const updateInput = managedCircularGrant
+          ? { targetAmount }
+          : {
               title: trimmedTitle,
               description: formData.description,
               targetAmount,
               currency: formData.currency,
-              projectGoalId: goal.id,
               emojiUnifiedCode: formData.emojiUnifiedCode,
+            }
+
+        updateProjectGoal.execute({
+          variables: {
+            input: {
+              projectGoalId: goal.id,
+              ...updateInput,
             },
           },
           onCompleted() {
