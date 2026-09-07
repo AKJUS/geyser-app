@@ -1,3 +1,17 @@
+## [0.59.0](https://github.com/geyserfund/geyser-app/compare/v0.55.0...v0.59.0) (2026-09-07)
+
+
+### Bug Fixes
+
+* **project-creation:** explain circular grant flow ([df13e91](https://github.com/geyserfund/geyser-app/commit/df13e91b312799eab4112edcc393dfa9c3d90bc5))
+* **project-creation:** refine retired flow screen ([2ef38b1](https://github.com/geyserfund/geyser-app/commit/2ef38b11aa3c1237a283bf4febf8bf5578cf3c39))
+* **project-creation:** update managed grant goal ([7ecfbfb](https://github.com/geyserfund/geyser-app/commit/7ecfbfb13ab908417aa14ab3bd77499d6f949863))
+
+
+### Performance Improvements
+
+* resolve React Doctor warnings ([ecfc5c8](https://github.com/geyserfund/geyser-app/commit/ecfc5c8971968cb26d7c9484aff1987ca2e3eceb))
+
 ## [0.58.1](https://github.com/geyserfund/geyser-app/compare/v0.55.0...v0.58.1) (2026-09-07)
 
 
