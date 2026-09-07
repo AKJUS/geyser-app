@@ -34,6 +34,8 @@ import type { FundFormType, FundingProjectState } from './fundingFormAtom.ts'
 import { recurringContributionRenewalAtom } from './recurringContributionRenewalAtom.ts'
 import { selectedGoalIdAtom } from './selectedGoalAtom'
 
+const EMPTY_CONTRIBUTION_PAYMENTS_INPUT: ContributionPaymentsInput = {}
+
 type BuildContributionCreateInputArgs = {
   formState: FundFormType
   fundingProject: FundingProjectState
@@ -270,13 +272,13 @@ export const fiatOnlyPaymentsInputAtom = atom<ContributionPaymentsInput>((get) =
   const fundingProject = get(fundingProjectAtom)
 
   if (fundingProject.fundingStrategy !== ProjectFundingStrategy.TakeItAll) {
-    return {}
+    return EMPTY_CONTRIBUTION_PAYMENTS_INPUT
   }
 
   const stripeReady = fundingProject.paymentMethods?.managedCircularGrant?.stripe
 
   if (!stripeReady) {
-    return {}
+    return EMPTY_CONTRIBUTION_PAYMENTS_INPUT
   }
 
   return {

@@ -1,5 +1,6 @@
 import { Button, Flex, useColorModeValue, VStack } from '@chakra-ui/react'
 import { t } from 'i18next'
+import type { ReactNode } from 'react'
 import { Link } from 'react-router'
 
 import { Body } from '@/shared/components/typography/Body.tsx'
@@ -22,7 +23,7 @@ export const CircularGrantPoolCard = ({
   metricBg: metricBgProp,
   metricText: metricTextProp,
   metricMutedText: metricMutedTextProp,
-}: CircularGrantPoolCardProps): JSX.Element => {
+}: CircularGrantPoolCardProps): ReactNode => {
   const defaultOuterBg = useColorModeValue('amber.9', 'amber.9')
   const defaultOuterText = useColorModeValue('neutral1.12', 'neutral1.1')
   const defaultMetricBg = useColorModeValue('neutral1.12', 'neutral1.2')

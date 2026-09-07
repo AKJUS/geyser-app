@@ -1,5 +1,6 @@
 import { Box, Button, Flex, HStack, Image, SimpleGrid, useColorModeValue, VStack } from '@chakra-ui/react'
 import { t } from 'i18next'
+import { useMemo } from 'react'
 import { PiCaretRightBold } from 'react-icons/pi'
 import { Link } from 'react-router'
 
@@ -167,19 +168,33 @@ const getModelCardBorderColor = (colors: AfribitCaseStudyColors, accent: ModelCa
 export const AfribitCaseStudyPage = () => {
   const { openDonateModal, donateModalElement } = useImpactFundsDonateModal()
   const onDonateClick = () => openDonateModal({ defaultCategoryIds: [CIRCULAR_GRANTS_CATEGORY_ID] })
-  const colors: AfribitCaseStudyColors = {
-    pageBg: useColorModeValue('white', 'utils.pbg'),
-    ink: useColorModeValue('#17120C', 'neutral1.12'),
-    muted: useColorModeValue('#5F6268', 'neutral1.10'),
-    line: useColorModeValue('#E9E2D4', 'neutral1.6'),
-    beige: useColorModeValue('#EAE3D4', 'neutral1.2'),
-    gold: useColorModeValue('#F6CF4A', 'amber.9'),
-    surfaceBg: useColorModeValue('white', 'neutral1.3'),
-    darkSurfaceBg: useColorModeValue('#17120C', 'neutral1.1'),
-    onGoldText: useColorModeValue('#17120C', '#17120C'),
-    heroAccentBg: useColorModeValue('#F7931A', 'orange.400'),
-    accentTeal: useColorModeValue('#00A884', 'primary1.300'),
-  }
+  const pageBg = useColorModeValue('white', 'utils.pbg')
+  const ink = useColorModeValue('#17120C', 'neutral1.12')
+  const muted = useColorModeValue('#5F6268', 'neutral1.10')
+  const line = useColorModeValue('#E9E2D4', 'neutral1.6')
+  const beige = useColorModeValue('#EAE3D4', 'neutral1.2')
+  const gold = useColorModeValue('#F6CF4A', 'amber.9')
+  const surfaceBg = useColorModeValue('white', 'neutral1.3')
+  const darkSurfaceBg = useColorModeValue('#17120C', 'neutral1.1')
+  const onGoldText = useColorModeValue('#17120C', '#17120C')
+  const heroAccentBg = useColorModeValue('#F7931A', 'orange.400')
+  const accentTeal = useColorModeValue('#00A884', 'primary1.300')
+  const colors = useMemo<AfribitCaseStudyColors>(
+    () => ({
+      pageBg,
+      ink,
+      muted,
+      line,
+      beige,
+      gold,
+      surfaceBg,
+      darkSurfaceBg,
+      onGoldText,
+      heroAccentBg,
+      accentTeal,
+    }),
+    [accentTeal, beige, darkSurfaceBg, gold, heroAccentBg, ink, line, muted, onGoldText, pageBg, surfaceBg],
+  )
 
   return (
     <>

@@ -35,6 +35,7 @@ import { NotFoundProject } from '../../modules/general/fallback/NotFoundProject.
 import { __production__ } from '../../shared/constants/config/env.ts'
 import { getPath, PathName } from '../../shared/constants/config/routerPaths.ts'
 import { ErrorBoundary } from './components/ErrorBoundary'
+import { LegacyCreationPaymentRedirect } from './components/LegacyCreationPaymentRedirect.tsx'
 import { renderPrivateRoute } from './components/PrivateRoute'
 
 /** Toggle this to enable/disable maintenance mode - set to true to show maintenance page for all routes */
@@ -52,12 +53,6 @@ const LegacyImpactFundRedirect = () => {
   const { impactFundName } = useParams<{ impactFundName: string }>()
 
   return <Navigate to={getPath('discoveryImpactFund', encodeURIComponent(impactFundName || ''))} replace />
-}
-
-const LegacyCreationPaymentRedirect = () => {
-  const { projectId } = useParams<{ projectId: string }>()
-
-  return <Navigate to={getPath('launchProjectDetails', projectId || 'new')} replace />
 }
 
 export const platformRoutes: RouteObject[] = [

@@ -1,7 +1,6 @@
-import { Button, HStack, Skeleton, Tooltip, VStack } from '@chakra-ui/react'
+import { Button, Skeleton, VStack } from '@chakra-ui/react'
 import { t } from 'i18next'
 import { useMemo } from 'react'
-import { PiInfo } from 'react-icons/pi'
 
 import { useProjectAPI } from '@/modules/project/API/useProjectAPI.ts'
 import { useProjectAtom } from '@/modules/project/hooks/useProjectAtom.ts'
@@ -12,8 +11,10 @@ import { useProjectToolkit } from '@/shared/utils/hooks/useProjectToolKit.ts'
 import { aonProjectTimeLeft, getFormattedAonGoalUserFacingDeadline } from '@/shared/utils/project/getAonData.ts'
 import { ProjectAonGoalStatus } from '@/types/index.ts'
 
-import { CircularGrantTooltipLabel } from '../../circularGrant/CircularGrantExplainer.tsx'
+import { BalanceSummaryRow } from './BalanceSummaryRow.tsx'
+import { CircularGrantBalanceLabel } from './CircularGrantBalanceLabel.tsx'
 import { GoalCampaignBalanceDisplay } from './GoalCampaignBalanceDisplay.tsx'
+import { RaisedAmountDisplay } from './RaisedAmountDisplay.tsx'
 
 const aonGoalFailedStatuses = [ProjectAonGoalStatus.Failed, ProjectAonGoalStatus.Cancelled]
 
@@ -41,18 +42,11 @@ export const AonProjectBalanceDisplay = () => {
   if (!project.aonGoal && (projectAonGoalLoading || projectAonGoalError)) {
     return (
       <VStack w="full" justifyContent={'space-between'} minHeight="128px" spacing={4}>
-        <HStack w="full" justifyContent="space-between">
-          <VStack display="flex" justifyContent="center" alignItems="start" spacing={0}>
-            <Body size="2xl" bold dark lineHeight={1} sx={{ fontVariantNumeric: 'tabular-nums' }}>
-              {formatAmount(project.balance ?? 0, 'BTCSAT')}
-            </Body>
-            <Body size="md" light display="inline">
-              <Body as="span" dark medium sx={{ fontVariantNumeric: 'tabular-nums' }}>
-                {formatAmount(project.balanceUsdCent ?? 0, 'USDCENT')}
-              </Body>
-              {` ${t('raised')} `}
-            </Body>
-          </VStack>
+        <BalanceSummaryRow>
+          <RaisedAmountDisplay
+            amount={formatAmount(project.balance ?? 0, 'BTCSAT')}
+            usdAmount={formatAmount(project.balanceUsdCent ?? 0, 'USDCENT')}
+          />
           <VStack display="flex" justifyContent="center" alignItems="start" spacing={0}>
             <Body size="xl" bold dark lineHeight={1} sx={{ fontVariantNumeric: 'tabular-nums' }}>
               {project.fundersCount ?? 0}
@@ -61,7 +55,7 @@ export const AonProjectBalanceDisplay = () => {
               {t('backers')}
             </Body>
           </VStack>
-        </HStack>
+        </BalanceSummaryRow>
 
         {projectAonGoalLoading ? (
           <Skeleton height="20px" width="100%" borderRadius="full" />
@@ -81,20 +75,7 @@ export const AonProjectBalanceDisplay = () => {
 
   return (
     <GoalCampaignBalanceDisplay
-      label={
-        isCircularGrant ? (
-          <HStack spacing={1}>
-            <span>{t('Circular Grant')}</span>
-            <Tooltip label={<CircularGrantTooltipLabel />} hasArrow placement="top">
-              <span aria-label={t('Circular grant information')}>
-                <PiInfo />
-              </span>
-            </Tooltip>
-          </HStack>
-        ) : (
-          t('All-or-Nothing (Beta)')
-        )
-      }
+      label={isCircularGrant ? <CircularGrantBalanceLabel /> : t('All-or-Nothing (Beta)')}
       raisedSats={balance ?? 0}
       raisedUsdCent={balanceUsdCent}
       goalSats={goalAmount ?? 0}

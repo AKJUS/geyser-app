@@ -2,7 +2,7 @@ import { Button, Image, ModalProps, VStack } from '@chakra-ui/react'
 import { useTranslation } from 'react-i18next'
 
 import { Modal } from '../../../../../shared/components/layouts/Modal'
-import { ProjectLaunchedImageUrl } from '../../../../../shared/constants'
+import { ProjectLaunchedImageUrl } from '../../../../../shared/constants/platform/url.ts'
 import { useProjectAtom } from '../../../hooks/useProjectAtom'
 import { isCircularGrantProject } from '../../../utils/isCircularGrantProject.ts'
 import { PromoteOptions } from '../views/body/sections/controlPanel/components/PromoteProjectMenu.tsx'

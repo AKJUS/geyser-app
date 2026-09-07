@@ -19,9 +19,7 @@ import {
   RecurringDonationCreateMutationVariables,
   recurringFundingModes,
 } from '@/modules/project/recurring/graphql'
-import {
-  ORIGIN,
-} from '@/shared/constants/config/env.ts'
+import { ORIGIN } from '@/shared/constants/config/env.ts'
 import { getPath } from '@/shared/constants/config/routerPaths.ts'
 import {
   ContributionCreateInput,
@@ -44,9 +42,7 @@ import {
   isValidRskPrivateKey,
 } from '../../forms/accountPassword/keyGenerationHelper.ts'
 import { useProjectAtom } from '../../hooks/useProjectAtom.ts'
-import {
-  createCallDataForBoltzClaimCall,
-} from '../../pages/projectFunding/utils/createCallDataForClaimCall.ts'
+import { createCallDataForBoltzClaimCall } from '../../pages/projectFunding/utils/createCallDataForClaimCall.ts'
 import { type FundingFlowGraphQLError, fundingFlowErrorAtom, fundingRequestErrorAtom } from '../state/errorAtom.ts'
 import { fundingContributionPartialUpdateAtom } from '../state/fundingContributionAtom.ts'
 import {
@@ -83,6 +79,65 @@ const isRetryableClaimTxSetError = (error: unknown) => {
   return error.graphQLErrors.some(
     ({ message }) => message.includes('version conflict detected') || message.includes('OptimisticLockError'),
   )
+}
+
+export const satsToWei = (sats: number) => {
+  if (!Number.isSafeInteger(sats)) {
+    throw new Error('Invalid sat amount for wei conversion')
+  }
+
+  return BigInt(sats) * 10000000000n
+}
+
+type AonClaimTxCallDataParams = {
+  claimAmountSats: number
+  fees: ContributionLightningToRskSwapPaymentDetailsFragment['fees']
+  contributorAddress: string
+  aonContractAddress: string
+  refundAddress: string
+  timelock: number
+  preimage: string
+  privateKey: string
+}
+
+const buildAonClaimTxCallData = ({
+  claimAmountSats,
+  fees,
+  contributorAddress,
+  aonContractAddress,
+  refundAddress,
+  timelock,
+  preimage,
+  privateKey,
+}: AonClaimTxCallDataParams) => {
+  const creatorFeesAmount = fees.reduce((acc, fee) => {
+    if (fee.feePayer === PaymentFeePayer.Creator) {
+      return acc + fee.feeAmount
+    }
+
+    return acc
+  }, 0)
+
+  const contributorFeesAmount = fees.reduce((acc, fee) => {
+    // Swap fees never make it to the contract, so should not be counted inside the contract
+    if (fee.feePayer === PaymentFeePayer.Contributor && !fee.description?.includes('Swap fee')) {
+      return acc + fee.feeAmount
+    }
+
+    return acc
+  }, 0)
+
+  return createCallDataForBoltzClaimCall({
+    contributorAddress,
+    creatorFees: satsToWei(creatorFeesAmount),
+    contributorFees: satsToWei(contributorFeesAmount),
+    preimage,
+    amount: satsToWei(claimAmountSats),
+    refundAddress,
+    timelock,
+    privateKey,
+    aonContractAddress,
+  })
 }
 
 const hasAnyPaymentDetails = (payments: RecurringContributionCheckoutPayload['payments']) =>
@@ -848,57 +903,6 @@ export const useGenerateTransactionDataForClaimingRBTCToContract = (projectOverr
     }
   }
 
-  const buildAonClaimTxCallData = (params: {
-    claimAmountSats: number
-    fees: ContributionLightningToRskSwapPaymentDetailsFragment['fees']
-    contributorAddress: string
-    aonContractAddress: string
-    refundAddress: string
-    timelock: number
-    preimage: string
-    privateKey: string
-  }) => {
-    const {
-      claimAmountSats,
-      fees,
-      contributorAddress,
-      aonContractAddress,
-      refundAddress,
-      timelock,
-      preimage,
-      privateKey,
-    } = params
-
-    const creatorFeesAmount = fees.reduce((acc, fee) => {
-      if (fee.feePayer === PaymentFeePayer.Creator) {
-        return acc + fee.feeAmount
-      }
-
-      return acc
-    }, 0)
-
-    const contributorFeesAmount = fees.reduce((acc, fee) => {
-      // Swap fees never make it to the contract, so should not be counted inside the contract
-      if (fee.feePayer === PaymentFeePayer.Contributor && !fee.description?.includes('Swap fee')) {
-        return acc + fee.feeAmount
-      }
-
-      return acc
-    }, 0)
-
-    return createCallDataForBoltzClaimCall({
-      contributorAddress,
-      creatorFees: satsToWei(creatorFeesAmount),
-      contributorFees: satsToWei(contributorFeesAmount),
-      preimage,
-      amount: satsToWei(claimAmountSats),
-      refundAddress,
-      timelock,
-      privateKey,
-      aonContractAddress,
-    })
-  }
-
   const setPaymentSwapClaimTx = async (params: { paymentId: string; claimTxCallDataHex: string }) => {
     const { paymentId, claimTxCallDataHex } = params
 
@@ -1013,14 +1017,6 @@ export const useGenerateTransactionDataForClaimingRBTCToContract = (projectOverr
     generateTransactionForLightningToRskSwap,
     generateTransactionForOnChainToRskSwap,
   }
-}
-
-export const satsToWei = (sats: number) => {
-  if (!Number.isSafeInteger(sats)) {
-    throw new Error('Invalid sat amount for wei conversion')
-  }
-
-  return BigInt(sats) * 10000000000n
 }
 
 export const weiToSats = (wei: bigint) => {
