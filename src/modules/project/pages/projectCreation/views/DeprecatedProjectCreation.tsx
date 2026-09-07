@@ -1,4 +1,4 @@
-import { Button, VStack } from '@chakra-ui/react'
+import { Button, Image, VStack } from '@chakra-ui/react'
 import { t } from 'i18next'
 import { useNavigate } from 'react-router'
 
@@ -16,13 +16,38 @@ export const DeprecatedProjectCreation = () => {
     : getPath('projectDraft', project.name || '')
 
   return (
-    <ProjectCreationPageWrapper title={t('Project creation is no longer available')} hideContinueButton>
-      <VStack w="full" alignItems="start" spacing={4}>
+    <ProjectCreationPageWrapper
+      title={t('Project creation is no longer available')}
+      hideHeader
+      removeBottomContainer
+      width="full"
+      maxWidth="none"
+    >
+      <VStack
+        w="full"
+        flex={1}
+        justifyContent="center"
+        alignItems="center"
+        spacing={4}
+        textAlign="center"
+        paddingX={{ base: 4, md: 8 }}
+        paddingBottom={{ base: 8, md: 16 }}
+      >
+        <Image
+          src="/images/removed-page-illustration.png"
+          alt={t('Project creation is no longer available')}
+          width={{ base: '260px', md: '380px' }}
+          maxWidth="100%"
+          height="auto"
+          objectFit="contain"
+        />
         <H2>{t('This project uses a retired creation flow.')}</H2>
-        <Body>
-          {t('Paid launches and legacy project creation are no longer supported. Existing records are preserved for historical purposes.')}
+        <Body maxWidth="620px">
+          {t(
+            'Paid launches and legacy project creation are no longer supported. Existing records are preserved for historical purposes.',
+          )}
         </Body>
-        <Button onClick={() => navigate(projectPath)}>
+        <Button marginTop={2} variant="soft" colorScheme="neutral1" onClick={() => navigate(projectPath)}>
           {t('View project')}
         </Button>
       </VStack>
