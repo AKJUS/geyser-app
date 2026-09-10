@@ -28,6 +28,7 @@ import { ProjectCreationReferralCapture } from '../components/ProjectCreationRef
 import { ProjectExitConfirmModal } from '../components/ProjectExitConfirmModal'
 import { ProjectReferrerSelect } from '../components/ProjectReferrerSelect.tsx'
 import { useCurrentUserIsFieldPartner } from '../hooks/useCurrentUserIsFieldPartner.ts'
+import { isLabifOpenFundingProject } from '@/modules/project/domain/labifOpenFunding.ts'
 import { useUpdateProjectWithLastCreationStep } from '../hooks/useIsStepAhead.tsx'
 import { useProjectForm } from '../hooks/useProjectForm'
 import type { ProjectCreationVariables } from '../hooks/useProjectForm.tsx'
@@ -59,11 +60,15 @@ export const LaunchProjectDetails = () => {
   const isCircularGrant = isEdit
     ? Boolean((project as { isCircularGrant?: boolean }).isCircularGrant)
     : selectedFundingOption === CircularGrantFundingOption
+  const isLabifOpenFunding = isEdit
+    ? isLabifOpenFundingProject(project)
+    : selectedFundingOption !== CircularGrantFundingOption
 
   const form = useProjectForm({
     isEdit,
     project,
     isCircularGrant,
+    isLabifOpenFunding,
   })
   const referrerHeroId = form.watch('referrerHeroId')
 

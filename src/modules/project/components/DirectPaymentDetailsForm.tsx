@@ -32,6 +32,7 @@ type DirectPaymentDetailsFormProps = {
   formId?: string
   hideSubmitButton?: boolean
   allowStripeOnly?: boolean
+  requireDirectPaymentDetails?: boolean
 }
 
 type DirectPaymentDetailsFormValues = {
@@ -73,6 +74,7 @@ export const DirectPaymentDetailsForm = ({
   formId,
   hideSubmitButton = false,
   allowStripeOnly = false,
+  requireDirectPaymentDetails = false,
 }: DirectPaymentDetailsFormProps) => {
   const toast = useNotification()
   const { updateProject } = useProjectAPI()
@@ -81,7 +83,10 @@ export const DirectPaymentDetailsForm = ({
     'idle',
   )
   const [isStripeReady, setIsStripeReady] = useState(allowStripeOnly)
-  const directPaymentDetailsSchema = useMemo(() => createDirectPaymentDetailsSchema(isStripeReady), [isStripeReady])
+  const directPaymentDetailsSchema = useMemo(
+    () => createDirectPaymentDetailsSchema(!requireDirectPaymentDetails && isStripeReady),
+    [isStripeReady, requireDirectPaymentDetails],
+  )
   const {
     control,
     handleSubmit,

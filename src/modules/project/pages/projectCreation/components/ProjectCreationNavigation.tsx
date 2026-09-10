@@ -17,6 +17,7 @@ import { useMemo } from 'react'
 import { Link, useLocation } from 'react-router'
 
 import { useProjectAtom } from '@/modules/project/hooks/useProjectAtom.ts'
+import { isLabifOpenFundingProject } from '@/modules/project/domain/labifOpenFunding.ts'
 import { dimensions } from '@/shared/constants/components/dimensions.ts'
 import { getPath } from '@/shared/constants/index.ts'
 import { standardPadding } from '@/shared/styles/reponsiveValues.ts'
@@ -49,15 +50,21 @@ export const ProjectCreationNavigationDesktop = () => {
 const ProjectCreationNavigation = (props: StackProps) => {
   const { project } = useProjectAtom()
   const location = useLocation()
+  const isLabifOpenFunding = isLabifOpenFundingProject(project)
   const steps = useMemo(
     () => [
       { title: 'Project Details', path: getPath('launchProjectDetails', project?.id || 'new') },
       { title: 'Circular Grant', path: getPath('launchFundingGoal', project?.id), isDisabled: !project.id },
       { title: 'Story', path: getPath('launchStory', project?.id), isDisabled: !project.id },
       { title: 'About You', path: getPath('launchAboutYou', project?.id), isDisabled: !project.id },
+      {
+        title: 'Payment Settings',
+        path: getPath('launchPayment', project?.id),
+        isDisabled: !project.id || !isLabifOpenFunding,
+      },
       { title: 'Launch', path: getPath('launchFinalize', project?.id), isDisabled: !project.id },
     ],
-    [project?.id],
+    [isLabifOpenFunding, project?.id],
   )
 
   const activeButtonIndex = useMemo(() => {

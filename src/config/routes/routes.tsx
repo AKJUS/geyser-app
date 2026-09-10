@@ -146,6 +146,13 @@ export const platformRoutes: RouteObject[] = [
             },
           },
           {
+            path: getPath('launchPayment', PathName.projectId),
+            async lazy() {
+              const LaunchPayment = await loadProjectCreationPages().then((m) => m.LaunchPayment)
+              return { Component: LaunchPayment }
+            },
+          },
+          {
             path: `${getPath('launchProject', PathName.projectId)}/payment/*`,
             element: <LegacyCreationPaymentRedirect />,
           },

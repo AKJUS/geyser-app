@@ -54,7 +54,7 @@ export const ProjectCard = ({ project }: ProjectCardProps) => {
   const isTiaProject = isLegacyTiaProject(project)
   const isCircularGrant = isCircularGrantProject(project)
 
-  const draftRedirectPath = getProjectCreationRoute(project.lastCreationStep, project.id)
+  const draftRedirectPath = getProjectCreationRoute(project.lastCreationStep, project.id, project)
   const { status: withdrawalStatus, withdrawableSats, withdrawableUsd } = useProjectWithdrawalStatus({ project })
   const {
     isReady: isStripeConnectReady,

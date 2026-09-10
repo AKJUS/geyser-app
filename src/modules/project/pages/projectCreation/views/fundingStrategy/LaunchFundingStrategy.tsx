@@ -1,7 +1,8 @@
-import { Circle, Divider, HStack, Icon, VStack } from '@chakra-ui/react'
+import { Box, Circle, Divider, HStack, Icon, VStack } from '@chakra-ui/react'
 import { t } from 'i18next'
-import { useSetAtom } from 'jotai'
+import { useAtom } from 'jotai'
 import { PiCheck } from 'react-icons/pi'
+import type { ReactNode } from 'react'
 import { useNavigate, useParams } from 'react-router'
 
 import { canCreateManagedCircularGrant } from '@/modules/project/domain/managedCircularGrant.ts'
@@ -18,7 +19,7 @@ import { CircularGrantFundingOption, projectCreationFundingOptionAtom } from '..
 export const LaunchFundingStrategy = () => {
   const navigate = useNavigate()
   const params = useParams<{ projectId: string }>()
-  const setStoredFundingOption = useSetAtom(projectCreationFundingOptionAtom)
+  const [storedFundingOption, setStoredFundingOption] = useAtom(projectCreationFundingOptionAtom)
   const { isFieldPartner } = useCurrentUserIsFieldPartner()
 
   const { project } = useProjectAtom()
@@ -29,29 +30,30 @@ export const LaunchFundingStrategy = () => {
 
   const isNewProject = !params.projectId || params.projectId === 'new'
   const showCircularGrantOption = canCreateManagedCircularGrant(isFieldPartner)
+  const selectedFundingOption = isNewProject
+    ? storedFundingOption
+    : project.isCircularGrant
+      ? CircularGrantFundingOption
+      : ProjectFundingStrategy.TakeItAll
 
   const continueProps = {
     onClick() {
-      setStoredFundingOption(CircularGrantFundingOption)
+      setStoredFundingOption(selectedFundingOption)
 
       if (isNewProject) {
         navigate(getPath('launchProjectDetails', 'new'))
         return
       }
 
-      if (project.fundingStrategy === ProjectFundingStrategy.TakeItAll) {
-        updateProjectWithLastCreationStep(undefined, undefined, ProjectCreationStep.ProjectDetails)
-      } else {
-        updateProjectWithLastCreationStep(
-          {
-            fundingStrategy: ProjectFundingStrategy.TakeItAll,
-          },
-          undefined,
-          ProjectCreationStep.ProjectDetails,
-        )
-      }
+      updateProjectWithLastCreationStep(
+        {
+          fundingStrategy: ProjectFundingStrategy.TakeItAll,
+        },
+        undefined,
+        ProjectCreationStep.ProjectDetails,
+      )
     },
-    isDisabled: isNewProject && !showCircularGrantOption,
+    isDisabled: selectedFundingOption === CircularGrantFundingOption && !showCircularGrantOption,
   }
 
   const backButtonProps = {
@@ -62,12 +64,21 @@ export const LaunchFundingStrategy = () => {
 
   return (
     <ProjectCreationPageWrapper
-      title={t('You are creating a Circular Grant')}
+      title={t('Choose your funding type')}
       continueButtonProps={continueProps}
       backButtonProps={backButtonProps}
     >
       <VStack w="full" h="full" align="flex-start" spacing={5}>
-        <CircularGrantExplainer />
+        <FundingOptionCard selected={selectedFundingOption === ProjectFundingStrategy.TakeItAll}>
+          <OpenFundingExplainer onClick={() => setStoredFundingOption(ProjectFundingStrategy.TakeItAll)} />
+        </FundingOptionCard>
+
+        <FundingOptionCard
+          selected={selectedFundingOption === CircularGrantFundingOption}
+          disabled={!showCircularGrantOption}
+        >
+          <CircularGrantExplainer onClick={() => setStoredFundingOption(CircularGrantFundingOption)} />
+        </FundingOptionCard>
 
         {!showCircularGrantOption && isNewProject ? (
           <Body size="md" light color="neutral1.7">
@@ -79,7 +90,59 @@ export const LaunchFundingStrategy = () => {
   )
 }
 
-const CircularGrantExplainer = () => {
+const FundingOptionCard = ({
+  children,
+  selected,
+  disabled = false,
+}: {
+  children: ReactNode
+  selected: boolean
+  disabled?: boolean
+}) => (
+  <Box
+    w="full"
+    border="2px solid"
+    borderColor={selected ? 'primary1.9' : 'neutral1.6'}
+    borderRadius="10px"
+    opacity={disabled ? 0.55 : 1}
+    pointerEvents={disabled ? 'none' : 'auto'}
+    cursor={disabled ? 'not-allowed' : 'pointer'}
+  >
+    {children}
+  </Box>
+)
+
+const OpenFundingExplainer = ({ onClick }: { onClick: () => void }) => {
+  return (
+    <VStack
+      w="full"
+      align="stretch"
+      spacing={4}
+      bg="utils.bg"
+      borderRadius="8px"
+      px={{ base: 4, md: 5 }}
+      py={5}
+      onClick={onClick}
+    >
+      <HStack alignItems="flex-start" spacing={4}>
+        <Circle size="32px" bg="primary1.9" flexShrink={0} mt={1}>
+          <Icon as={PiCheck} fontSize="18px" color="utils.pbg" />
+        </Circle>
+        <VStack w="full" alignItems="flex-start" spacing={1}>
+          <H2 size="xl" bold>{t('Open Funding')}</H2>
+          <Body>
+            {t('Raise funds directly from your community and use them as they come in.')}
+          </Body>
+        </VStack>
+      </HStack>
+      <Body light color="neutral1.7">
+        {t('Only applications to LABIF can create Open Funding projects. Other projects will be rejected.')}
+      </Body>
+    </VStack>
+  )
+}
+
+const CircularGrantExplainer = ({ onClick }: { onClick: () => void }) => {
   return (
     <VStack
       w="full"
@@ -91,6 +154,7 @@ const CircularGrantExplainer = () => {
       borderRadius="8px"
       px={{ base: 4, md: 5 }}
       py={5}
+      onClick={onClick}
     >
       <HStack alignItems="flex-start" spacing={4}>
         <Circle size="32px" bg="primary1.9" flexShrink={0} mt={1}>

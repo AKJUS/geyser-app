@@ -16,7 +16,7 @@ export const useProjectDraftRedirect = () => {
 
   useEffect(() => {
     if (project && isProjectOwner && !loading && isDraftProject && !isDraftUrl) {
-      navigate(getProjectCreationRoute(project.lastCreationStep, project.id))
+      navigate(getProjectCreationRoute(project.lastCreationStep, project.id, project))
     }
   }, [project, isProjectOwner, loading, navigate, isDraftProject, isDraftUrl])
 }
