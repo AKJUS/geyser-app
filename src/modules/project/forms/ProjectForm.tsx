@@ -1,5 +1,4 @@
-import { gql, useLazyQuery } from '@apollo/client'
-import { Box, FormErrorIcon, HStack, Link as ChakraLink, Stack, VStack } from '@chakra-ui/react'
+import { Box, FormErrorIcon, HStack, Stack, VStack } from '@chakra-ui/react'
 import { useAtomValue } from 'jotai'
 import { ChangeEventHandler, useCallback, useEffect } from 'react'
 import { Controller, UseFormReturn } from 'react-hook-form'
@@ -14,13 +13,12 @@ import {
   ProjectSubCategoryList,
 } from '@/shared/constants/platform/projectCategory.ts'
 import { FileUpload } from '@/shared/molecules'
-import { countriesAtom } from '@/shared/state/countriesAtom.ts'
+import { countriesAtom, countriesLoadingAtom } from '@/shared/state/countriesAtom.ts'
 
 import { TextArea, TextInputBox, UploadBox } from '../../../components/ui'
 import { FieldContainer } from '../../../shared/components/form/FieldContainer'
-import { getPath, ProjectValidations } from '../../../shared/constants'
+import { ProjectValidations } from '../../../shared/constants'
 import { useDebounce } from '../../../shared/hooks'
-import { Feedback, FeedBackVariant } from '../../../shared/molecules/Feedback.tsx'
 import { ImageCropAspectRatio } from '../../../shared/molecules/ImageCropperModal'
 import { MediaControlWithReorder } from '../../../shared/molecules/MediaControlWithReorder'
 import { Country, useProjectByNameForNameCheckLazyQuery } from '../../../types'
@@ -31,20 +29,6 @@ import { ProjectLinks } from './ProjectLinks.tsx'
 import { ProjectTagsCreateEdit } from './ProjectTagsCreateEdit.tsx'
 
 const MIN_LENGTH_TO_QUERY_PROJECT = 3
-
-const QUERY_LABIF_COUNTRY_ELIGIBILITY = gql`
-  query LabifCountryEligibility($countryCode: String) {
-    impactFundLabifCountryEligibility(countryCode: $countryCode) {
-      isEligible
-    }
-  }
-`
-
-type LabifCountryEligibilityQuery = {
-  impactFundLabifCountryEligibility: {
-    isEligible: boolean
-  }
-}
 
 export const MAX_PROJECT_HEADERS = 7
 
@@ -57,6 +41,7 @@ export const ProjectForm = ({ form, isEdit }: ProjectFormProps) => {
   const { t } = useTranslation()
 
   const countriesData = useAtomValue(countriesAtom)
+  const countriesLoading = useAtomValue(countriesLoadingAtom)
 
   const { formState, setValue, watch, setError, control, clearErrors } = form
 
@@ -89,11 +74,6 @@ export const ProjectForm = ({ form, isEdit }: ProjectFormProps) => {
 
   const projectName = watch('name')
   const debouncedProjectName = useDebounce(projectName, 500)
-  const [getLabifEligibility, { data: labifEligibility }] = useLazyQuery<LabifCountryEligibilityQuery>(
-    QUERY_LABIF_COUNTRY_ELIGIBILITY,
-    { fetchPolicy: 'network-only' },
-  )
-
   useEffect(() => {
     if (debouncedProjectName) {
       handleProjectFetch(debouncedProjectName)
@@ -371,32 +351,12 @@ export const ProjectForm = ({ form, isEdit }: ProjectFormProps) => {
           control={form.control}
           containerProps={{ 'data-testid': 'project-country-select' }}
           options={countriesData}
+          isLoading={countriesLoading}
           getOptionLabel={(option: Country) => option.name}
           getOptionValue={(option: Country) => option.code}
           onFocus={() => clearErrors('location')}
-          onChange={(country) => {
-            const countryCode = (country as Country | null)?.code || null
-            getLabifEligibility({ variables: { countryCode } })
-          }}
         />
       </FieldContainer>
-
-      {labifEligibility?.impactFundLabifCountryEligibility.isEligible ? (
-        <Feedback variant={FeedBackVariant.INFO} noIcon>
-          <Body size="sm" color="inherit">
-            {t('This project may be eligible to receive funding from the Latin America Bitcoin Impact Fund. ')}
-            <ChakraLink
-              href={getPath('impactFunds', 'latam-impact-fund')}
-              target="_blank"
-              rel="noopener noreferrer"
-              textDecoration="underline"
-              _hover={{ textDecoration: 'underline' }}
-            >
-              {t('Learn more about how to apply.')}
-            </ChakraLink>
-          </Body>
-        </Feedback>
-      ) : null}
 
       <ProjectLinks form={form} />
 

@@ -95,7 +95,7 @@ const createSchema = (isLabifOpenFunding: boolean) => yup
       .required('Country is a required field.')
       .test(
         'is-labif-country',
-        'Only projects in LABIF-eligible countries can create Open Funding projects.',
+        'Only countries in South America, Central America, and the Caribbean can create Open Funding projects.',
         (value) => !isLabifOpenFunding || isLabifEligibleCountry(value),
       ),
     links: yup.array().of(yup.string().matches(validUrl, 'Please enter a valid URL')),
